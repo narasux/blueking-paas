@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 class Module(OwnerTimestampedModel):
     """Module for Application
     Every application has a default module. Application owner can
-    create multiple modules to achieve a micro-services architecture
+    create multiple modules to achieve a micro services architecture
     """
 
     id = models.UUIDField("UUID", default=uuid.uuid4, primary_key=True, editable=False, auto_created=True, unique=True)
