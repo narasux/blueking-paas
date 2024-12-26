@@ -80,6 +80,5 @@ def build_default_cluster():
     apiserver = APIServer(
         host=settings.FOR_TESTS_CLUSTER_CONFIG["url"],
         cluster=cluster,
-        overridden_hostname=settings.FOR_TESTS_CLUSTER_CONFIG["force_domain"],
     )
     return cluster, apiserver

@@ -62,8 +62,8 @@ def clusters():
         },
         "baz": {
             "api_servers": [
-                dict(host="https://192.168.1.100:6553", overridden_hostname="baz-a.domain.com"),
-                dict(host="https://192.168.1.101:6553", overridden_hostname="baz-b.domain.com"),
+                dict(host="https://192.168.1.100:6553"),
+                dict(host="https://192.168.1.101:6553"),
             ]
         },
     }
