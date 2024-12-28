@@ -58,6 +58,12 @@ class DBConfigLoader:
 
             for api_server in cluster.api_servers.order_by("created"):
                 cfg = Configuration(host=api_server.host)
+
+                # 临时逻辑，测试如果有配置 assert_hostname，能否解决一些证书的问题？
+                assert_hostname = cluster.annotations.get("assert_hostname", None)
+                if assert_hostname is not None:
+                    cfg.assert_hostname = assert_hostname
+
                 if ssl_ca_cert:
                     cfg.ssl_ca_cert = ssl_ca_cert
                 else:
