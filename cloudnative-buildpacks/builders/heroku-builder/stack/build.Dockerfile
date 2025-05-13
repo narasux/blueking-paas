@@ -1,9 +1,9 @@
 ARG IMAGE=heroku/heroku
-ARG TAG=18.v27
+ARG TAG=24.v149
 
 FROM ${IMAGE}:${TAG}
 
-ARG STACK_ID="heroku-18"
+ARG STACK_ID="heroku-24"
 ARG sources
 ARG packages
 ARG package_args='--allow-downgrades --allow-remove-essential --allow-change-held-packages --no-install-recommends'
