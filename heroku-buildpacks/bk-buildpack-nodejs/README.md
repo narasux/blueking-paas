@@ -20,3 +20,4 @@
 ## 已有 patch
 
 - bin/compile.patch: 添加对 pre-compile，post-compile hook 的支持
+- lib/binaries.sh.patch: 支持从自定义对象存储仓库中下载 nodejs 二进制文件
