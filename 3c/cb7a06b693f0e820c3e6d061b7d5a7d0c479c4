@@ -1,0 +1,20 @@
+apiserver/paasng/paasng/utils/validators.py
+  h_83f239dc907c66 124,173-175,181-185,187-190,193
+apiserver/paasng/paasng/platform/sourcectl/git/client.py
+  h_83f239dc907c66 32,41-44,58-63,68-69,76,81-85,113,120,150,158-160,167-168,207,230,233-239,242
+apiserver/paasng/tests/paasng/platform/sourcectl/git/test_git_client.py
+  h_83f239dc907c66 27,30-51,102,165-176
+apiserver/paasng/tests/paasng/test_utils/test_validators.py
+  h_83f239dc907c66 58,74-78,87-92,100-101
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "3ccb7a06b693f0e820c3e6d061b7d5a7d0c479c4",
+  "prompts": {},
+  "humans": {
+    "h_83f239dc907c66": {
+      "author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  }
+}
