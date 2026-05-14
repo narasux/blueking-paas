@@ -1,0 +1,30 @@
+apiserver/paasng/paasng/platform/smart_app/views.py
+  h_83f239dc907c66 71,112,324
+apiserver/paasng/paasng/utils/views.py
+  h_83f239dc907c66 20,223-224,226-261,263-267,269-292
+apiserver/paasng/tests/paasng/misc/tools/smart_app/test_serializers.py
+  h_83f239dc907c66 1-55
+apiserver/paasng/paasng/misc/tools/smart_app/serializers.py
+  h_83f239dc907c66 27,37-40
+apiserver/paasng/tests/paasng/test_utils/test_view.py
+  h_83f239dc907c66 19,31-32,119-212
+apiserver/paasng/paasng/misc/tools/smart_app/views.py
+  h_83f239dc907c66 39,75
+apiserver/paasng/paasng/platform/sourcectl/svn/admin.py
+  h_83f239dc907c66 65,67
+apiserver/paasng/paasng/platform/smart_app/serializers.py
+  h_83f239dc907c66 29,51-52,54
+apiserver/paasng/tests/paasng/platform/smart_app/test_serializers.py
+  h_83f239dc907c66 1-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "61c7283cfc89c63ac1d5800d202b032160f91bfe",
+  "prompts": {},
+  "humans": {
+    "h_83f239dc907c66": {
+      "author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  }
+}
