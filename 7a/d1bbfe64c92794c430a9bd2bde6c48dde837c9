@@ -1,0 +1,16 @@
+apiserver/paasng/paasng/platform/sourcectl/git/client.py
+  h_83f239dc907c66 61-63,71,78,84,86,152,244
+apiserver/paasng/tests/paasng/platform/sourcectl/git/test_git_client.py
+  h_83f239dc907c66 33-34,43-45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "7ad1bbfe64c92794c430a9bd2bde6c48dde837c9",
+  "prompts": {},
+  "humans": {
+    "h_83f239dc907c66": {
+      "author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  }
+}
