@@ -1,0 +1,26 @@
+apiserver/paasng/paasng/platform/sourcectl/svn/admin.py
+  h_83f239dc907c66 64,67-68,71
+apiserver/paasng/tests/paasng/test_utils/test_view.py
+  h_83f239dc907c66 19,29,36,162-308
+apiserver/paasng/paasng/utils/validators.py
+  h_83f239dc907c66 28,34,36-39,153,204,210-220,222-228,230-232,234,236,238-274,276-277
+apiserver/paasng/paasng/platform/sourcectl/serializers.py
+  h_83f239dc907c66 30,215-221
+apiserver/paasng/paasng/platform/smart_app/views.py
+  h_83f239dc907c66 61,99,258
+apiserver/paasng/paasng/platform/sourcectl/git/client.py
+  h_83f239dc907c66 31-32,40-41,57-64,69-70,77,82-86,114,121,151,159-161,168-169,208,231,234-240,243
+apiserver/paasng/paasng/platform/smart_app/serializers.py
+  h_83f239dc907c66 23,40-45,47-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "684d6da47bc9e61dde3d6341c09256feee23dba0",
+  "prompts": {},
+  "humans": {
+    "h_83f239dc907c66": {
+      "author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  }
+}
