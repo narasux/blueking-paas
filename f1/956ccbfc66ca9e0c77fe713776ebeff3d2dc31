@@ -1,0 +1,14 @@
+apiserver/paasng/paasng/platform/modules/serializers.py
+  h_83f239dc907c66 291
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "f1956ccbfc66ca9e0c77fe713776ebeff3d2dc31",
+  "prompts": {},
+  "humans": {
+    "h_83f239dc907c66": {
+      "author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  }
+}
