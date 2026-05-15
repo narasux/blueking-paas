@@ -1,0 +1,18 @@
+apiserver/paasng/paasng/accessories/servicehub/remote/store.py
+  h_83f239dc907c66 27,181-182,185-186,195,203,218
+apiserver/paasng/paasng/platform/engine/processes/utils.py
+  h_83f239dc907c66 18,21-22,48-49,56-60,62
+apiserver/paasng/paasng/core/core/storages/redisdb.py
+  h_83f239dc907c66 18,67,73-77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "2b8827c8870b65964df99efacf9d60e382640324",
+  "prompts": {},
+  "humans": {
+    "h_83f239dc907c66": {
+      "author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  }
+}
