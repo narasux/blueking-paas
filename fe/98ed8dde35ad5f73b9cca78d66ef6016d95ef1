@@ -1,0 +1,16 @@
+webfe/package_vue/src/views/dev-center/app/engine/analysis/comps/analysis.vue
+  h_83f239dc907c66 289
+webfe/package_vue/src/views/dev-center/app/engine/analysis/event.vue
+  h_83f239dc907c66 232
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "fe98ed8dde35ad5f73b9cca78d66ef6016d95ef1",
+  "prompts": {},
+  "humans": {
+    "h_83f239dc907c66": {
+      "author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  }
+}
