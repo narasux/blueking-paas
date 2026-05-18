@@ -1,0 +1,27 @@
+apiserver/paasng/tests/paasng/platform/engine/test_views_deploy.py
+  h_83f239dc907c66 21,23,54
+  s_1b663dc8c2e1df::t_6a863560b17d37 1-20,22,24-53,55-86
+apiserver/paasng/paasng/platform/engine/views/deploy.py
+  s_1b663dc8c2e1df::t_6a863560b17d37 180
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "0db4378193c6fcaa37ec8507e84dedc72e34b91f",
+  "prompts": {},
+  "humans": {
+    "h_83f239dc907c66": {
+      "author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  },
+  "sessions": {
+    "s_1b663dc8c2e1df": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e393e-83bc-7022-8b91-99210dfdec26",
+        "model": "gpt-5.5"
+      },
+      "human_author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  }
+}
