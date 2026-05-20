@@ -1,0 +1,18 @@
+apiserver/init.sh
+  h_83f239dc907c66 251-252,326-327,339-340
+apiserver/paasng/tests/paasng/platform/modules/test_manage_image.py
+  h_83f239dc907c66 1-99
+apiserver/paasng/paasng/platform/modules/management/commands/manage_image.py
+  h_83f239dc907c66 55-60,71,93,107,123,133,144,146-157,160,167-169
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "12803bf0af9c11da8a80f528e432bd83e65086bc",
+  "prompts": {},
+  "humans": {
+    "h_83f239dc907c66": {
+      "author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  }
+}
