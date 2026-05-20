@@ -1,0 +1,14 @@
+apiserver/init.sh
+  h_83f239dc907c66 252-253,255-256,258-264
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "5abea74e509442da1bcd3582c7215e5492b33da0",
+  "prompts": {},
+  "humans": {
+    "h_83f239dc907c66": {
+      "author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  }
+}
