@@ -1,0 +1,16 @@
+apiserver/init.sh
+  h_83f239dc907c66 393-394,396-397,399,401-402
+apiserver/paasng/paasng/platform/modules/management/commands/push_smart_image.py
+  h_83f239dc907c66 65,78,95-98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "6cdb3051175c455a34f046791b5648655d4e2b62",
+  "prompts": {},
+  "humans": {
+    "h_83f239dc907c66": {
+      "author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  }
+}
