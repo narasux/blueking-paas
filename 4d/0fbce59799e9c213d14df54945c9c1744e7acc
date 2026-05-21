@@ -1,0 +1,28 @@
+apiserver/paasng/paasng/platform/modules/models/runtime.py
+  h_83f239dc907c66 89-92
+apiserver/init.sh
+  h_83f239dc907c66 202,223,251,278,370-373
+apiserver/paasng/paasng/plat_admin/admin42/templates/admin42/settings/runtimes/buildpacks.html
+  h_83f239dc907c66 58-62,202-204,516
+apiserver/paasng/paasng/plat_admin/admin42/serializers/runtimes.py
+  h_83f239dc907c66 34
+apiserver/paasng/paasng/platform/modules/management/commands/manage_buildpack.py
+  h_83f239dc907c66 47,63,68
+apiserver/paasng/paasng/platform/modules/management/commands/bind_buildpacks.py
+  h_83f239dc907c66 34,42,44-49,54,58,60-64
+apiserver/paasng/tests/paasng/platform/modules/test_manage_buildpack.py
+  h_83f239dc907c66 1-293
+apiserver/paasng/paasng/platform/modules/management/commands/bind_runtime.py
+  h_83f239dc907c66 34,48,50-55,60,75,79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "4d0fbce59799e9c213d14df54945c9c1744e7acc",
+  "prompts": {},
+  "humans": {
+    "h_83f239dc907c66": {
+      "author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  }
+}
