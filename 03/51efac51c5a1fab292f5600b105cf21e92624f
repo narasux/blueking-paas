@@ -1,0 +1,14 @@
+apiserver/paasng/paasng/platform/smart_app/views.py
+  h_83f239dc907c66 195,395
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "0351efac51c5a1fab292f5600b105cf21e92624f",
+  "prompts": {},
+  "humans": {
+    "h_83f239dc907c66": {
+      "author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  }
+}
