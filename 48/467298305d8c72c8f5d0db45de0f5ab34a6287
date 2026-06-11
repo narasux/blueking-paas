@@ -1,0 +1,14 @@
+apiserver/paasng/paasng/platform/modules/manager.py
+  h_83f239dc907c66 36,149,160-162,171-173
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "48467298305d8c72c8f5d0db45de0f5ab34a6287",
+  "prompts": {},
+  "humans": {
+    "h_83f239dc907c66": {
+      "author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  }
+}
