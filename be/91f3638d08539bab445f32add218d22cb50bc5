@@ -1,0 +1,14 @@
+apiserver/paasng/paasng/accessories/servicehub/constants.py
+  h_83f239dc907c66 74,77,80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "be91f3638d08539bab445f32add218d22cb50bc5",
+  "prompts": {},
+  "humans": {
+    "h_83f239dc907c66": {
+      "author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  }
+}
