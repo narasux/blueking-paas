@@ -1,0 +1,18 @@
+apiserver/paasng/tests/paasng/platform/declarative/conftest.py
+  h_83f239dc907c66 25,74-78
+apiserver/paasng/tests/utils/helpers.py
+  h_83f239dc907c66 396-398,404
+apiserver/paasng/tests/api/test_applications.py
+  h_83f239dc907c66 424-428,856-862
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "e31f5ff0254e1cf7efc6673a0b85673d2ff99259",
+  "prompts": {},
+  "humans": {
+    "h_83f239dc907c66": {
+      "author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  }
+}
