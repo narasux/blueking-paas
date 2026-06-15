@@ -1,0 +1,16 @@
+apiserver/paasng/paasng/accessories/servicehub/remote/manager.py
+  h_83f239dc907c66 24,119-133,396-398
+apiserver/paasng/tests/paasng/accessories/servicehub/remote/test_manager.py
+  h_83f239dc907c66 191,206-208,233
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "4194829f0569cc9b67ff655de3c434fdc025e3e6",
+  "prompts": {},
+  "humans": {
+    "h_83f239dc907c66": {
+      "author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  }
+}
