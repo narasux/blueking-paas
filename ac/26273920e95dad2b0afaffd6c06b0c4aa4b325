@@ -1,0 +1,16 @@
+apiserver/paasng/paasng/accessories/servicehub/constants.py
+  h_83f239dc907c66 75,78
+webfe/package_vue/src/views/platform/services/service-config/services-sideslider.vue
+  h_83f239dc907c66 139
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.10",
+  "base_commit_sha": "ac26273920e95dad2b0afaffd6c06b0c4aa4b325",
+  "prompts": {},
+  "humans": {
+    "h_83f239dc907c66": {
+      "author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  }
+}
