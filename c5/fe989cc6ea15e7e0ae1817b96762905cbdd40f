@@ -1,0 +1,16 @@
+apiserver/paasng/paasng/accessories/servicehub/binding_policy/policy.py
+  h_83f239dc907c66 25,139,141
+apiserver/paasng/paasng/accessories/servicehub/constants.py
+  h_83f239dc907c66 87-92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.10",
+  "base_commit_sha": "c5fe989cc6ea15e7e0ae1817b96762905cbdd40f",
+  "prompts": {},
+  "humans": {
+    "h_83f239dc907c66": {
+      "author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  }
+}
