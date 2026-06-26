@@ -1,0 +1,28 @@
+apiserver/paasng/paasng/platform/applications/ai_agent_migration/helpers.py
+  h_83f239dc907c66 1-554
+apiserver/paasng/paasng/platform/applications/ai_agent_migration/DESIGN.md
+  h_83f239dc907c66 1-179
+apiserver/paasng/paasng/platform/applications/ai_agent_migration/exporter.py
+  h_83f239dc907c66 1-430
+apiserver/paasng/paasng/platform/applications/ai_agent_migration/importer.py
+  h_83f239dc907c66 1-764
+apiserver/paasng/paasng/platform/applications/ai_agent_migration/OPERATION.md
+  h_83f239dc907c66 1-404
+apiserver/paasng/paasng/platform/applications/ai_agent_migration/__init__.py
+  h_83f239dc907c66 1-73
+apiserver/paasng/paasng/platform/agent_sandbox/management/commands/upsert_sandbox_config.py
+  h_83f239dc907c66 39
+apiserver/paasng/paasng/platform/applications/management/commands/migrate_ai_agent_metadata.py
+  h_83f239dc907c66 1-190
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.1",
+  "base_commit_sha": "58d7c379bdb88cd8a9589fe61755d4eff848c3b0",
+  "prompts": {},
+  "humans": {
+    "h_83f239dc907c66": {
+      "author": "narasux <suzh9@mail2.sysu.edu.cn>"
+    }
+  }
+}
