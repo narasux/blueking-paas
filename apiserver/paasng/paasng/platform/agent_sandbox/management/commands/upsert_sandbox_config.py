@@ -36,7 +36,7 @@ class Command(BaseCommand):
         python manage.py upsert_sandbox_config --app_code ai-agent-prod --cpu 4 --memory 2
         python manage.py upsert_sandbox_config --app_code ai-agent-prod --cpu 4
         python manage.py upsert_sandbox_config --app_code ai-agent-prod --reset
-    """ % (DEFAULT_SANDBOX_CPU, DEFAULT_SANDBOX_MEMORY)
+    """
 
     help = "Create, update or reset the sandbox settings for an application"
 
@@ -84,8 +84,7 @@ class Command(BaseCommand):
         action = "Created" if created else "Updated"
         self.stdout.write(
             self.style.SUCCESS(
-                f"{action} sandbox settings for '{app_code}': "
-                f"cpu={config.cpu} core, memory={config.memory} GB"
+                f"{action} sandbox settings for '{app_code}': cpu={config.cpu} core, memory={config.memory} GB"
             )
         )
 

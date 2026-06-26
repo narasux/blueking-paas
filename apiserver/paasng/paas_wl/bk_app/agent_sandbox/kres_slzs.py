@@ -133,8 +133,8 @@ def _build_resources(cpu: float, memory: float) -> Dict[str, Dict[str, str]]:
     """
     requests = DEFAULT_RESOURCES["requests"]
 
-    cpu_milli = max(int(round(cpu * 1000)), int(parse_quantity(requests["cpu"]) * 1000))
-    memory_mi = max(int(round(memory * 1024)), int(parse_quantity(requests["memory"]) / (1024 * 1024)))
+    cpu_milli = max(round(cpu * 1000), int(parse_quantity(requests["cpu"]) * 1000))
+    memory_mi = max(round(memory * 1024), int(parse_quantity(requests["memory"]) / (1024 * 1024)))
 
     return {
         "limits": {"cpu": f"{cpu_milli}m", "memory": f"{memory_mi}Mi"},
