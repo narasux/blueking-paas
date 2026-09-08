@@ -88,5 +88,8 @@
 ## 通过 Token 获取用户信息 API
 # BKAUTH_TOKEN_USER_INFO_ENDPOINT: ''
 
-## 静态资源
+## 更多参考：https://docs.djangoproject.com/zh-hans/6.1/ref/settings/#force-script-name
+# FORCE_SCRIPT_NAME: ''
+
+## 静态资源。未配置时：有 FORCE_SCRIPT_NAME 则为 {FORCE_SCRIPT_NAME}/static/，否则为 /static/
 # STATIC_URL: /static/

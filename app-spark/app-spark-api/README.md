@@ -116,3 +116,10 @@ Runtime 的 `/health` 的 `pushed_*` 游标看。
 
 另一个缺口是目前没有任何对外接口会终止 Runtime，所以上面那套吊销机制装好了但还没有调用点；
 真正开始回收 Runtime（尤其换成沙箱之后）时，回收路径必须走 `terminate_runtime()`。
+
+## 部署相关
+
+### 镜像构建
+
+项目提供 [Dockerfile](Dockerfile)，以父目录 `app-spark/` 为构建上下文，
+包含 API 和 Agent 各自的生产依赖。**镜像中包含 Agent 是为了支持当前的 `local_process` 驱动。**

@@ -265,7 +265,17 @@ AGENT_CONTEXT_STORAGE = settings.get(
 DATA_UPLOAD_MAX_MEMORY_SIZE = settings.get("DATA_UPLOAD_MAX_MEMORY_SIZE", 64 * 1024 * 1024)
 
 
+# 子路径部署：Ingress 会把此外前缀剥掉再转给应用（见 charts 中的 ingress.yaml）。
+# 对外 URL 用 reverse_public()。Agent Runtime 回写地址是否带此外前缀由各 provider 决定。
+# 空字符串视为未配置，与部署在站点根路径等价。
+FORCE_SCRIPT_NAME = settings.get("FORCE_SCRIPT_NAME") or None
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.2/howto/static-files/
 STATIC_ROOT = str(BASE_DIR / "public" / "static")
-STATIC_URL = settings.get("STATIC_URL", "/static/")
+# 未显式配置时跟 FORCE_SCRIPT_NAME 走，避免静态资源仍指向站点根路径。
+_static_url = settings.get("STATIC_URL")
+if _static_url is None:
+    STATIC_URL = f"{FORCE_SCRIPT_NAME.rstrip('/')}/static/" if FORCE_SCRIPT_NAME else "/static/"
+else:
+    STATIC_URL = _static_url
