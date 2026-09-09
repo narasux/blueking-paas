@@ -14,22 +14,15 @@
 # We undertake not to change the open source license (MIT license) applicable
 # to the current version of the project delivered to anyone in the future.
 
-from typing import Literal
+"""会话自身的失败，与 Agent Runtime 的失败（见 :mod:`app_spark_api.agent.runtime.exceptions`）分开。
 
-from ninja import Field, Schema
-
-
-class AnonymousUserResponse(Schema):
-    """未登录用户请求用户信息时返回的 401 响应体。"""
-
-    authenticated: Literal[False] = Field(description="是否已登录")
-    login_url: str = Field(description="登录页完整 URL")
+区别在于该怪谁：Runtime 那边报的是「拉起来的东西不好用」，这里报的是「这个会话现在不允许这么
+干」——重试同一个请求永远不会变好，除非会话本身换了状态。
+"""
 
 
-class AuthenticatedUserResponse(Schema):
-    """当前登录用户的用户信息。"""
+class ConversationClosedError(Exception):
+    """会话已经结束了，不能再推进，也不能再结束一次。
 
-    authenticated: Literal[True] = Field(description="是否已登录")
-    username: str = Field(description="用户登录名")
-    display_name: str = Field(description="用户展示名")
-    tenant_id: str | None = Field(description="所属租户的 ID")
+    结束是终态：一个会话的历史仍然可读，但它不再接受新的一轮对话。
+    """

@@ -14,22 +14,17 @@
 # We undertake not to change the open source license (MIT license) applicable
 # to the current version of the project delivered to anyone in the future.
 
-from typing import Literal
+"""API 层共用的 schema，放在这里而不是某个具体模块的 `entities.py` 里。
+
+只收那些每个模块都会用到、且形状不该各自发明一遍的东西。错误响应就是典型：让 projects 和
+conversations 各自定义一个字段一模一样的 `ErrorResponse`，除了让 OpenAPI 文档里多出几个同名
+不同源的 schema 之外没有任何好处。
+"""
 
 from ninja import Field, Schema
 
 
-class AnonymousUserResponse(Schema):
-    """未登录用户请求用户信息时返回的 401 响应体。"""
+class ErrorResponse(Schema):
+    """一次失败的请求，`detail` 是可以直接展示给调用方的说明。"""
 
-    authenticated: Literal[False] = Field(description="是否已登录")
-    login_url: str = Field(description="登录页完整 URL")
-
-
-class AuthenticatedUserResponse(Schema):
-    """当前登录用户的用户信息。"""
-
-    authenticated: Literal[True] = Field(description="是否已登录")
-    username: str = Field(description="用户登录名")
-    display_name: str = Field(description="用户展示名")
-    tenant_id: str | None = Field(description="所属租户的 ID")
+    detail: str = Field(description="面向调用方的错误描述，可直接展示")

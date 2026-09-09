@@ -14,22 +14,20 @@
 # We undertake not to change the open source license (MIT license) applicable
 # to the current version of the project delivered to anyone in the future.
 
-from typing import Literal
-
-from ninja import Field, Schema
+"""Project 相关的失败。"""
 
 
-class AnonymousUserResponse(Schema):
-    """未登录用户请求用户信息时返回的 401 响应体。"""
+class ProjectConflictError(Exception):
+    """要创建的 Project 和已有数据撞上了。
 
-    authenticated: Literal[False] = Field(description="是否已登录")
-    login_url: str = Field(description="登录页完整 URL")
+    分成下面两个子类，是因为调用方要做的事不一样：撞 ID 换个 ID 就行，撞名字得换名字。只给一个
+    「已存在」会把这个判断推给调用方去猜。
+    """
 
 
-class AuthenticatedUserResponse(Schema):
-    """当前登录用户的用户信息。"""
+class ProjectIdTakenError(ProjectConflictError):
+    """这个 Project ID 已经被占用了。ID 是全局唯一的，不分租户。"""
 
-    authenticated: Literal[True] = Field(description="是否已登录")
-    username: str = Field(description="用户登录名")
-    display_name: str = Field(description="用户展示名")
-    tenant_id: str | None = Field(description="所属租户的 ID")
+
+class ProjectNameTakenError(ProjectConflictError):
+    """同租户下已经有同名 Project 了。"""

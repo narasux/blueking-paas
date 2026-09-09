@@ -14,22 +14,27 @@
 # We undertake not to change the open source license (MIT license) applicable
 # to the current version of the project delivered to anyone in the future.
 
-from typing import Literal
+from datetime import datetime
 
 from ninja import Field, Schema
 
-
-class AnonymousUserResponse(Schema):
-    """未登录用户请求用户信息时返回的 401 响应体。"""
-
-    authenticated: Literal[False] = Field(description="是否已登录")
-    login_url: str = Field(description="登录页完整 URL")
+from app_spark_api.core.projects.constants import PROJECT_ID_PATTERN
 
 
-class AuthenticatedUserResponse(Schema):
-    """当前登录用户的用户信息。"""
+class ProjectCreateRequest(Schema):
+    """创建一个 Project。"""
 
-    authenticated: Literal[True] = Field(description="是否已登录")
-    username: str = Field(description="用户登录名")
-    display_name: str = Field(description="用户展示名")
-    tenant_id: str | None = Field(description="所属租户的 ID")
+    id: str = Field(
+        pattern=PROJECT_ID_PATTERN,
+        description="项目 ID，全局唯一，2-20 个字符，小写字母开头，仅含小写字母、数字与连字符，会在路径中使用",
+    )
+    name: str = Field(min_length=1, max_length=20, description="项目名称，同租户内唯一")
+
+
+class ProjectResponse(Schema):
+    """一个 Project 对象。"""
+
+    id: str = Field(description="项目 ID")
+    name: str = Field(description="项目名称")
+    created: datetime = Field(description="创建时间")
+    updated: datetime = Field(description="最后更新时间")

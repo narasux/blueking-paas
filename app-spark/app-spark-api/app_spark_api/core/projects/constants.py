@@ -14,22 +14,8 @@
 # We undertake not to change the open source license (MIT license) applicable
 # to the current version of the project delivered to anyone in the future.
 
-from typing import Literal
-
-from ninja import Field, Schema
-
-
-class AnonymousUserResponse(Schema):
-    """未登录用户请求用户信息时返回的 401 响应体。"""
-
-    authenticated: Literal[False] = Field(description="是否已登录")
-    login_url: str = Field(description="登录页完整 URL")
-
-
-class AuthenticatedUserResponse(Schema):
-    """当前登录用户的用户信息。"""
-
-    authenticated: Literal[True] = Field(description="是否已登录")
-    username: str = Field(description="用户登录名")
-    display_name: str = Field(description="用户展示名")
-    tenant_id: str | None = Field(description="所属租户的 ID")
+# Project ID 由调用方指定，所以它的形状必须在入口处卡死，而不只是「建议这么写」。
+#
+# 首字符限定为字母，是为了避免出现纯数字 ID——那种 ID 在 URL 和日志里很容易被当成别的东西。
+# 长度 2-20，上限对齐 `Project.id` 的 max_length。
+PROJECT_ID_PATTERN = r"^[a-z][a-z0-9-]{1,19}$"
