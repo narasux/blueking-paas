@@ -61,11 +61,15 @@ def create_runtime_app(
         if runtime.replicator is not None:
             await runtime.replicator.start()
         lifecycle_task = asyncio.create_task(runtime.lifecycle.watch())
+        app_watch_task = asyncio.create_task(runtime.app_supervisor.watch())
         try:
             yield
         finally:
+            app_watch_task.cancel()
             lifecycle_task.cancel()
             try:
+                with suppress(asyncio.CancelledError):
+                    await app_watch_task
                 with suppress(asyncio.CancelledError):
                     await lifecycle_task
                 if runtime.replicator is not None:
