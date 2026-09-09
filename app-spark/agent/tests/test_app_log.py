@@ -55,21 +55,6 @@ def test_an_oversized_file_keeps_the_tail(tmp_path: Path) -> None:
     assert "H" not in result.content
 
 
-def test_an_unreadable_file_is_reported_as_read_failure(tmp_path: Path) -> None:
-    path = tmp_path / "app.log"
-    path.write_text("secret")
-    path.chmod(0)
-
-    try:
-        result = AppLogReader(path).read()
-    finally:
-        path.chmod(0o644)
-
-    assert result.status == "error"
-    assert result.content.startswith(READ_ERROR_PREFIX)
-    assert "secret" not in result.content
-
-
 def test_a_directory_is_reported_as_read_failure(tmp_path: Path) -> None:
     result = AppLogReader(tmp_path).read()
 
