@@ -24,7 +24,7 @@ uv sync
 | 变量 | 必需 | 说明 |
 |------|------|------|
 | `APP_SPARK_AGENT_RUNTIME_TOKEN` | 是 | 所有 HTTP 接口的 Bearer（含 `GET /health`、`POST /runs`、控制面） |
-| `APP_SPARK_AGENT_AIDEV_ACCESS_TOKEN` | 调用真实模型时是 | 用户态 access_token。app-spark 创建 bkaidev 空间和单个智能体后注入；出站只放进 `X-Bkapi-Authorization`。`fake:*` 不需要 |
+| `APP_SPARK_AGENT_BK_AIDEV_ACCESS_TOKEN` | 调用真实模型时是 | 用户态 access_token。app-spark 创建 bkaidev 空间和单个智能体后注入；出站只放进 `X-Bkapi-Authorization`。`fake:*` 不需要 |
 | `APP_SPARK_AGENT_MODEL_API_KEY` | 调用真实模型时是 | 兼容回落。未注入上面的 token 时当作 access_token 用。`fake:*` 不需要 |
 | `APP_SPARK_AGENT_MODEL_NAME` | 调用真实模型时是 | 不带 vendor 前缀，必须落在对照表（本期 `deepseek-v4-flash`） |
 | `APP_SPARK_AGENT_MODEL_BASE_URL` | 调用真实模型时是 | bkaidev LLM 网关 v1 入口，不要带 `/chat/completions` |
@@ -39,7 +39,7 @@ uv sync
 | `APP_SPARK_AGENT_MODEL` | 否 | 缺省 `deepseek:deepseek-v4-flash` |
 
 就绪门闩：`fake:*` 直接就绪；真实模型要 access_token 非空 **且** `MODEL_BASE_URL` 非空 **且** `MODEL_NAME` 在对照表。
-access_token 取值：`APP_SPARK_AGENT_AIDEV_ACCESS_TOKEN` → `APP_SPARK_AGENT_MODEL_API_KEY`。
+access_token 取值：`APP_SPARK_AGENT_BK_AIDEV_ACCESS_TOKEN` → `APP_SPARK_AGENT_MODEL_API_KEY`。
 bkaidev 鉴权是 `X-Bkapi-Authorization: {"access_token":"..."}`，不是 `Authorization: Bearer`。
 沙箱不注入 `bk_app_code` / `bk_app_secret`。
 
@@ -47,7 +47,7 @@ bkaidev 鉴权是 `X-Bkapi-Authorization: {"access_token":"..."}`，不是 `Auth
 
 ```bash
 export APP_SPARK_AGENT_RUNTIME_TOKEN=replace-me
-export APP_SPARK_AGENT_AIDEV_ACCESS_TOKEN=replace-me
+export APP_SPARK_AGENT_BK_AIDEV_ACCESS_TOKEN=replace-me
 export APP_SPARK_AGENT_MODEL_NAME=deepseek-v4-flash
 export APP_SPARK_AGENT_MODEL_BASE_URL=https://bkaidev.apigw.example.com/prod/openapi/aidev/gateway/llm/v1
 export APP_SPARK_AGENT_WORKSPACE=/tmp/app-spark-workspace
@@ -192,7 +192,7 @@ curl -sS -N -H "Authorization: Bearer ${APP_SPARK_AGENT_RUNTIME_TOKEN}" \
 make docker-build
 docker run --rm -p 8090:8090 \
   -e APP_SPARK_AGENT_RUNTIME_TOKEN=replace-me \
-  -e APP_SPARK_AGENT_AIDEV_ACCESS_TOKEN=replace-me \
+  -e APP_SPARK_AGENT_BK_AIDEV_ACCESS_TOKEN=replace-me \
   -e APP_SPARK_AGENT_MODEL_NAME=deepseek-v4-flash \
   -e APP_SPARK_AGENT_MODEL_BASE_URL=https://bkaidev.apigw.example.com/prod/openapi/aidev/gateway/llm/v1 \
   app-spark-agent:dev
@@ -227,7 +227,7 @@ make test
 都走 HTTP。设置好有效配置后：
 
 ```bash
-export APP_SPARK_AGENT_AIDEV_ACCESS_TOKEN=replace-me
+export APP_SPARK_AGENT_BK_AIDEV_ACCESS_TOKEN=replace-me
 export APP_SPARK_AGENT_MODEL_NAME=deepseek-v4-flash
 export APP_SPARK_AGENT_MODEL_BASE_URL=https://bkaidev.apigw.example.com/prod/openapi/aidev/gateway/llm/v1
 export APP_SPARK_AGENT_RUNTIME_TOKEN=replace-me

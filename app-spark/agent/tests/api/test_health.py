@@ -72,7 +72,7 @@ def test_readiness_requires_url_and_listed_model(
 def test_a_missing_token_is_reported_as_unready(api: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """用户态 token 和兼容回落密钥都空，才算没有 access_token。"""
     monkeypatch.setattr(settings, "MODEL_API_KEY", None)
-    monkeypatch.setattr(settings, "AIDEV_ACCESS_TOKEN", None)
+    monkeypatch.setattr(settings, "BK_AIDEV_ACCESS_TOKEN", None)
 
     reported: dict[str, Any] = api.get("/health").json()
 
@@ -85,7 +85,7 @@ def test_aidev_access_token_is_enough_when_the_api_key_is_absent(
 ) -> None:
     """用户态 token 是正门；MODEL_API_KEY 只是兼容回落。"""
     monkeypatch.setattr(settings, "MODEL_API_KEY", None)
-    monkeypatch.setattr(settings, "AIDEV_ACCESS_TOKEN", "user-access-token")
+    monkeypatch.setattr(settings, "BK_AIDEV_ACCESS_TOKEN", "user-access-token")
 
     reported: dict[str, Any] = api.get("/health").json()
 
@@ -96,7 +96,7 @@ def test_a_fake_model_is_ready_without_an_api_key(api: TestClient, monkeypatch: 
     """The deterministic fake model never calls a provider and therefore needs no credential."""
     monkeypatch.setattr(settings, "MODEL", "fake:write-file")
     monkeypatch.setattr(settings, "MODEL_API_KEY", None)
-    monkeypatch.setattr(settings, "AIDEV_ACCESS_TOKEN", None)
+    monkeypatch.setattr(settings, "BK_AIDEV_ACCESS_TOKEN", None)
 
     reported: dict[str, Any] = api.get("/health").json()
 

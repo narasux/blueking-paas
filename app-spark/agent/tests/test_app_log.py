@@ -1,4 +1,7 @@
-"""受控应用日志：只读约定文件、截尾 8KB、不碰 workspace / state。"""
+"""用户应用日志：只读约定文件、截尾 8KB、不碰 workspace / state。
+
+这里的应用是用户用自然语言编出来、跑在沙箱里的那个服务，不是 Agent 进程。
+"""
 
 from pathlib import Path
 
@@ -103,7 +106,7 @@ def test_log_content_masks_configured_credentials(
     path.write_text(f"crash token={token}")
     monkeypatch.setattr(settings, "RUNTIME_TOKEN", token)
     monkeypatch.setattr(settings, "MODEL_API_KEY", None)
-    monkeypatch.setattr(settings, "AIDEV_ACCESS_TOKEN", None)
+    monkeypatch.setattr(settings, "BK_AIDEV_ACCESS_TOKEN", None)
     monkeypatch.setattr(settings, "CONTROL_PLANE_TOKEN", None)
 
     result = AppLogReader(path).read()
@@ -139,7 +142,7 @@ def test_the_log_tool_cannot_see_state_and_file_tools_cannot_see_the_log(
     log_path.write_text("app-ok")
     monkeypatch.setattr(settings, "APP_LOG_PATH", log_path)
     monkeypatch.setattr(settings, "MODEL_API_KEY", "not-used-by-this-test")
-    monkeypatch.setattr(settings, "AIDEV_ACCESS_TOKEN", None)
+    monkeypatch.setattr(settings, "BK_AIDEV_ACCESS_TOKEN", None)
     monkeypatch.setattr(settings, "MODEL_BASE_URL", "")
 
     agent = create_agent(workspace, state_dir=state)

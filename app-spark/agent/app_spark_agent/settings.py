@@ -61,15 +61,18 @@ TENANT_ID = env.str("TENANT_ID", "")
 # 真正启动起来，场景清单见 fake_model.py。
 MODEL = env.str("MODEL", "deepseek:deepseek-v4-flash", validate=Length(min=1))
 
-# 模型密钥。官网 Bearer 路径会用它；本期 bkaidev 优先走下面的用户态 access_token。
-# 未注入 AIDEV_ACCESS_TOKEN 时，它被当作 access_token 回落，以免已入库的
-# SPARK_MODEL_API_KEY 立刻失效。
+# 一把钥匙，两条路，不是两套并行生产配置。
+#
+# 网关：未注入 BK_AIDEV_ACCESS_TOKEN 时，把它当作 bkaidev 的 access_token 回落，
+# 以免已入库的 SPARK_MODEL_API_KEY 立刻失效。
+# 直连：没有网关意图时，交给 pydantic-ai 按 MODEL 的 <provider>:<model> 推断，
+# 走官网 Bearer。/runs 只认网关三件套或 fake；只配这把钥匙走直连时 HTTP 仍 503。
 MODEL_API_KEY = env.str("MODEL_API_KEY", "") or None
 
-# 用户态 access_token。app-spark 在 bkaidev 为该沙箱创建空间和单个智能体后，把这个
-# token 注入 Agent 容器。出站只放进 X-Bkapi-Authorization，禁止带
-# bk_app_code / bk_app_secret。本组件不调创建空间 / 智能体的 API。
-AIDEV_ACCESS_TOKEN = env.str("AIDEV_ACCESS_TOKEN", "") or None
+# 用户态 access_token。app-spark 在 bkaidev 建好该沙箱的空间和单个智能体后注入。
+# 出站只放进 X-Bkapi-Authorization 的 access_token 字段，不带 bk_app_code /
+# bk_app_secret。本组件不调创建空间 / 智能体的 API。
+BK_AIDEV_ACCESS_TOKEN = env.str("BK_AIDEV_ACCESS_TOKEN", "") or None
 
 # 不带 vendor 前缀的模型名（如 deepseek-v4-flash），必须落在 MODEL_PROFILES。
 MODEL_NAME = env.str("MODEL_NAME", "")
@@ -207,20 +210,22 @@ def _stripped(value: str | None) -> str | None:
 def gateway_access_token() -> str | None:
     """bkaidev 出站使用的用户态 access_token。
 
-    优先 AIDEV_ACCESS_TOKEN；未注入时回落到 MODEL_API_KEY。
+    优先 BK_AIDEV_ACCESS_TOKEN；未注入时回落到 MODEL_API_KEY。
     两侧都先 strip，空白值不能挡住回落，也不能把就绪门闩打成真。
     """
-    return _stripped(AIDEV_ACCESS_TOKEN) or _stripped(MODEL_API_KEY)
+    return _stripped(BK_AIDEV_ACCESS_TOKEN) or _stripped(MODEL_API_KEY)
 
 
 def uses_direct_provider() -> bool:
     """没有网关意图时，才允许 MODEL_API_KEY 走官网 provider。
 
-    注入了 AIDEV_ACCESS_TOKEN 或 MODEL_BASE_URL 就表示要走 bkaidev，
+    注入了 BK_AIDEV_ACCESS_TOKEN 或 MODEL_BASE_URL 就表示要走 bkaidev，
     缺项不得回落到公网 api.deepseek.com。
     """
     return (
-        _stripped(AIDEV_ACCESS_TOKEN) is None and not MODEL_BASE_URL.strip() and _stripped(MODEL_API_KEY) is not None
+        _stripped(BK_AIDEV_ACCESS_TOKEN) is None
+        and not MODEL_BASE_URL.strip()
+        and _stripped(MODEL_API_KEY) is not None
     )
 
 

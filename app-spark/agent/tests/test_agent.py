@@ -39,7 +39,7 @@ def test_create_agent_scopes_tools_to_workspace(
     monkeypatch: MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(settings, "MODEL_API_KEY", "not-used-by-this-test")
-    monkeypatch.setattr(settings, "AIDEV_ACCESS_TOKEN", None)
+    monkeypatch.setattr(settings, "BK_AIDEV_ACCESS_TOKEN", None)
     monkeypatch.setattr(settings, "MODEL_BASE_URL", "")
 
     agent = create_agent(tmp_path)
@@ -94,7 +94,7 @@ def shell_of(agent: Agent[None, str]) -> Shell:
     "name",
     [
         "APP_SPARK_AGENT_MODEL_API_KEY",
-        "APP_SPARK_AGENT_AIDEV_ACCESS_TOKEN",
+        "APP_SPARK_AGENT_BK_AIDEV_ACCESS_TOKEN",
         "APP_SPARK_AGENT_RUNTIME_TOKEN",
     ],
 )
@@ -124,7 +124,7 @@ def provider_key_of(model: Any) -> str:
 def test_the_injected_contract_key_reaches_the_provider(monkeypatch: MonkeyPatch) -> None:
     """`APP_SPARK_AGENT_MODEL_API_KEY` alone must be enough to start the provider."""
     monkeypatch.setattr(settings, "MODEL_API_KEY", "injected-contract-key")
-    monkeypatch.setattr(settings, "AIDEV_ACCESS_TOKEN", None)
+    monkeypatch.setattr(settings, "BK_AIDEV_ACCESS_TOKEN", None)
     monkeypatch.setattr(settings, "MODEL_BASE_URL", "")
 
     assert provider_key_of(build_model()) == "injected-contract-key"
@@ -139,7 +139,7 @@ def test_the_settings_key_reaches_the_provider_when_it_is_not_in_the_environment
     itself would come up empty.
     """
     monkeypatch.setattr(settings, "MODEL_API_KEY", "key-only-in-settings")
-    monkeypatch.setattr(settings, "AIDEV_ACCESS_TOKEN", None)
+    monkeypatch.setattr(settings, "BK_AIDEV_ACCESS_TOKEN", None)
     monkeypatch.setattr(settings, "MODEL_BASE_URL", "")
 
     assert provider_key_of(build_model()) == "key-only-in-settings"
@@ -147,7 +147,7 @@ def test_the_settings_key_reaches_the_provider_when_it_is_not_in_the_environment
 
 def test_gateway_model_uses_access_token_header_not_bearer(monkeypatch: MonkeyPatch) -> None:
     """bkaidev 过网关靠 X-Bkapi-Authorization；OpenAI api_key 只填占位 empty。"""
-    monkeypatch.setattr(settings, "AIDEV_ACCESS_TOKEN", "user-access-token")
+    monkeypatch.setattr(settings, "BK_AIDEV_ACCESS_TOKEN", "user-access-token")
     monkeypatch.setattr(settings, "MODEL_API_KEY", "must-not-become-bearer")
     monkeypatch.setattr(settings, "MODEL_BASE_URL", "https://bkaidev.test/prod/openapi/aidev/gateway/llm/v1")
     monkeypatch.setattr(settings, "MODEL_NAME", "deepseek-v4-flash")
@@ -170,7 +170,7 @@ def test_gateway_model_uses_access_token_header_not_bearer(monkeypatch: MonkeyPa
 
 async def test_gateway_request_omits_bearer_authorization(monkeypatch: MonkeyPatch) -> None:
     """OpenAI SDK 会自动加 Bearer；出站必须剥掉，只留 X-Bkapi-Authorization。"""
-    monkeypatch.setattr(settings, "AIDEV_ACCESS_TOKEN", "user-access-token")
+    monkeypatch.setattr(settings, "BK_AIDEV_ACCESS_TOKEN", "user-access-token")
     monkeypatch.setattr(settings, "MODEL_API_KEY", "must-not-become-bearer")
     captured: dict[str, str] = {}
 
@@ -217,8 +217,8 @@ def test_incomplete_gateway_settings_do_not_infer_a_public_provider(
     tmp_path: Path,
     monkeypatch: MonkeyPatch,
 ) -> None:
-    """AIDEV 已注入但网关地址缺失时，不得回落到官网 DeepSeek。"""
-    monkeypatch.setattr(settings, "AIDEV_ACCESS_TOKEN", "user-access-token")
+    """BK_AIDEV 已注入但网关地址缺失时，不得回落到官网 DeepSeek。"""
+    monkeypatch.setattr(settings, "BK_AIDEV_ACCESS_TOKEN", "user-access-token")
     monkeypatch.setattr(settings, "MODEL_API_KEY", None)
     monkeypatch.setattr(settings, "MODEL_BASE_URL", "")
     monkeypatch.setattr(settings, "MODEL_NAME", "deepseek-v4-flash")

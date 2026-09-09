@@ -206,7 +206,7 @@ def test_runs_rejects_bad_token(api: TestClient, headers: dict[str, str]) -> Non
 
 def test_runs_model_not_ready_503(api: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(settings, "MODEL_API_KEY", None)
-    monkeypatch.setattr(settings, "AIDEV_ACCESS_TOKEN", None)
+    monkeypatch.setattr(settings, "BK_AIDEV_ACCESS_TOKEN", None)
     resp = api.post(
         "/runs",
         headers=SSE_HEADERS,

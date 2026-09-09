@@ -18,4 +18,4 @@ __all__ = ["StartRuntime", "conversation_id", "require_api_key", "start_runtime"
 def require_api_key() -> None:
     """Skip rather than fail when there is no key: these tests spend real money and time."""
     if settings.MODEL.startswith("fake:") or not settings.is_model_ready():
-        pytest.skip("e2e needs AIDEV_ACCESS_TOKEN or MODEL_API_KEY, plus MODEL_NAME and MODEL_BASE_URL")
+        pytest.skip("e2e needs BK_AIDEV_ACCESS_TOKEN or MODEL_API_KEY, plus MODEL_NAME and MODEL_BASE_URL")

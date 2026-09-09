@@ -8,7 +8,7 @@ from app_spark_agent import settings
 
 @pytest.fixture
 def ready(monkeypatch: MonkeyPatch) -> None:
-    monkeypatch.setattr(settings, "AIDEV_ACCESS_TOKEN", "user-token")
+    monkeypatch.setattr(settings, "BK_AIDEV_ACCESS_TOKEN", "user-token")
     monkeypatch.setattr(settings, "MODEL_API_KEY", None)
     monkeypatch.setattr(settings, "MODEL_NAME", "deepseek-v4-flash")
     monkeypatch.setattr(settings, "MODEL_BASE_URL", "https://bkaidev.test/v1")
@@ -39,7 +39,7 @@ def test_unknown_model_is_not_inferred(ready: None, monkeypatch: MonkeyPatch) ->
 
 def test_a_fake_model_is_ready_without_gateway_settings(monkeypatch: MonkeyPatch) -> None:
     monkeypatch.setattr(settings, "MODEL", "fake:write-file")
-    monkeypatch.setattr(settings, "AIDEV_ACCESS_TOKEN", None)
+    monkeypatch.setattr(settings, "BK_AIDEV_ACCESS_TOKEN", None)
     monkeypatch.setattr(settings, "MODEL_API_KEY", None)
     monkeypatch.setattr(settings, "MODEL_NAME", "")
     monkeypatch.setattr(settings, "MODEL_BASE_URL", "")
@@ -48,7 +48,7 @@ def test_a_fake_model_is_ready_without_gateway_settings(monkeypatch: MonkeyPatch
 
 
 def test_api_key_is_a_fallback_token(monkeypatch: MonkeyPatch) -> None:
-    monkeypatch.setattr(settings, "AIDEV_ACCESS_TOKEN", None)
+    monkeypatch.setattr(settings, "BK_AIDEV_ACCESS_TOKEN", None)
     monkeypatch.setattr(settings, "MODEL_API_KEY", "legacy-key")
     monkeypatch.setattr(settings, "MODEL_NAME", "deepseek-v4-flash")
     monkeypatch.setattr(settings, "MODEL_BASE_URL", "https://bkaidev.test/v1")
@@ -58,7 +58,7 @@ def test_api_key_is_a_fallback_token(monkeypatch: MonkeyPatch) -> None:
 
 
 def test_whitespace_token_falls_back_or_is_unready(monkeypatch: MonkeyPatch) -> None:
-    monkeypatch.setattr(settings, "AIDEV_ACCESS_TOKEN", "   ")
+    monkeypatch.setattr(settings, "BK_AIDEV_ACCESS_TOKEN", "   ")
     monkeypatch.setattr(settings, "MODEL_API_KEY", "legacy-key")
     monkeypatch.setattr(settings, "MODEL_NAME", "deepseek-v4-flash")
     monkeypatch.setattr(settings, "MODEL_BASE_URL", "https://bkaidev.test/v1")
@@ -73,12 +73,12 @@ def test_whitespace_token_falls_back_or_is_unready(monkeypatch: MonkeyPatch) -> 
 
 
 def test_direct_provider_is_only_for_api_key_without_gateway(monkeypatch: MonkeyPatch) -> None:
-    monkeypatch.setattr(settings, "AIDEV_ACCESS_TOKEN", None)
+    monkeypatch.setattr(settings, "BK_AIDEV_ACCESS_TOKEN", None)
     monkeypatch.setattr(settings, "MODEL_API_KEY", "legacy-key")
     monkeypatch.setattr(settings, "MODEL_BASE_URL", "")
 
     assert settings.uses_direct_provider() is True
 
-    monkeypatch.setattr(settings, "AIDEV_ACCESS_TOKEN", "user-token")
+    monkeypatch.setattr(settings, "BK_AIDEV_ACCESS_TOKEN", "user-token")
 
     assert settings.uses_direct_provider() is False

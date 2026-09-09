@@ -1,4 +1,9 @@
-"""受控应用日志读取：只读一条约定文件，不接受路径，单次不超过尾部 8KB。"""
+"""读用户应用的约定日志。
+
+这里的应用是用户用自然语言编出来、跑在沙箱里的那个服务，不是 Agent 进程。
+只读 APP_LOG_PATH 这一条，不接受路径参数，单次不超过尾部 8KB。
+后续会把该服务的 stdout/stderr 接到同一文件。
+"""
 
 import os
 from pathlib import Path
@@ -29,7 +34,7 @@ class AppLogReadResult(BaseModel):
 
 
 class AppLogReader:
-    """只读 APP_LOG_PATH。构造时就拒绝落在 workspace / state 里的路径。"""
+    """只读用户应用的约定日志文件。构造时就拒绝落在 workspace / state 里的路径。"""
 
     def __init__(
         self,
