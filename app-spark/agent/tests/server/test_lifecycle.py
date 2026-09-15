@@ -1,7 +1,10 @@
 """Idle clock and app-child registry: fake clock plus real subprocesses."""
 
+import os
 import subprocess
 import sys
+import time
+from pathlib import Path
 
 import pytest
 
@@ -21,7 +24,10 @@ class FakeClock:
 
 
 def _sleeping_child() -> subprocess.Popen[bytes]:
-    return subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)"])
+    return subprocess.Popen(
+        [sys.executable, "-c", "import time; time.sleep(60)"],
+        start_new_session=True,
+    )
 
 
 def test_idle_watch_timeout_busy_and_reset() -> None:
@@ -90,3 +96,29 @@ def test_idle_timeout_stops_children_then_exits(monkeypatch: pytest.MonkeyPatch)
         if child.poll() is None:
             child.kill()
             child.wait()
+
+
+def test_stop_all_kills_the_process_group(tmp_path: Path) -> None:
+    pid_file = tmp_path / "child.pid"
+    script = (
+        "import subprocess, sys, time\n"
+        f"child = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(60)'])\n"
+        f"open({str(pid_file)!r}, 'w').write(str(child.pid))\n"
+        "time.sleep(60)\n"
+    )
+    parent = subprocess.Popen([sys.executable, "-c", script], start_new_session=True)
+    try:
+        deadline = time.monotonic() + 5
+        while not pid_file.exists() and time.monotonic() < deadline:
+            time.sleep(0.02)
+        child_pid = int(pid_file.read_text())
+        registry = AppProcessRegistry()
+        registry.register(parent)
+        registry.stop_all()
+        assert parent.poll() is not None
+        with pytest.raises(ProcessLookupError):
+            os.kill(child_pid, 0)
+    finally:
+        if parent.poll() is None:
+            parent.kill()
+            parent.wait()

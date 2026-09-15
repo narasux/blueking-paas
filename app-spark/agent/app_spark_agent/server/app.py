@@ -2,7 +2,7 @@
 
 import asyncio
 from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager, suppress
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
@@ -68,10 +68,8 @@ def create_runtime_app(
             app_watch_task.cancel()
             lifecycle_task.cancel()
             try:
-                with suppress(asyncio.CancelledError):
-                    await app_watch_task
-                with suppress(asyncio.CancelledError):
-                    await lifecycle_task
+                # watch 若因非 CancelledError 退出，串行 await 会跳过 idle 任务和 flush。
+                await asyncio.gather(app_watch_task, lifecycle_task, return_exceptions=True)
                 if runtime.replicator is not None:
                     try:
                         # A last attempt to hand over whatever the background task had not
