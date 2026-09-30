@@ -32,7 +32,13 @@ from typing import TYPE_CHECKING, AsyncGenerator
 
 from django.db import IntegrityError
 from django.utils import timezone
-from e2b import AsyncSandbox, NotFoundException, SandboxException, TimeoutException
+from e2b import (
+    AsyncSandbox,
+    AuthenticationException,
+    NotFoundException,
+    SandboxException,
+    TimeoutException,
+)
 from e2b.connection_config import ConnectionConfig
 from packaging.version import InvalidVersion, Version
 
@@ -104,6 +110,11 @@ KILL_REQUEST_TIMEOUT_SECONDS = 5.0
 # 这一轮跟着多等一分钟。
 RENEW_TIMEOUT_SECONDS = 5.0
 
+# 一次 SDK 调用可能抛出的错误。凭据或沙箱用户不对时的 AuthenticationException 不是
+# SandboxException 的子类，只接 SandboxException 会让它原样漏出去。2.44.0 里限流是
+# RateLimitException、控制面 503 是 SandboxException，都已经是它的子类。
+SANDBOX_ERRORS = (SandboxException, AuthenticationException)
+
 
 async def read_agent_health(
     handle: AgentRuntimeHandle, *, timeout_seconds: float = HEALTH_PROBE_TIMEOUT_SECONDS
@@ -155,6 +166,7 @@ class E2BProvider(AgentRuntimeProvider):
                 api_key="...",
                 api_url="https://example.com/e2b",
                 callback_base_url="https://app-spark.example.com",
+                template="app-spark-agent",
             )
         )
         handle = await provider.ensure(
@@ -242,7 +254,6 @@ class E2BProvider(AgentRuntimeProvider):
 
                 # Outside the provisioning bound: the claim is bound by now, so it can no longer
                 # be mistaken for an abandoned one, and starting the Agent has a bound of its own.
-                await self._prepare_sandbox(sandbox)
                 handle = claim.handle(sandbox)
                 envs = self._build_agent_env(
                     project_id=project_id,
@@ -330,7 +341,8 @@ class E2BProvider(AgentRuntimeProvider):
 
             sandbox = await provider.get_sandbox(conversation_id)
             if sandbox is not None:
-                await sandbox.commands.run("pwd")
+                # As the Agent's user; without it envd runs the command as its default user.
+                await sandbox.commands.run("pwd", user=provider.config.agent_user)
 
         :param conversation_id: Conversation owning the sandbox.
         :return: Connected SDK sandbox, or ``None`` when no live sandbox is recorded.
@@ -367,15 +379,6 @@ class E2BProvider(AgentRuntimeProvider):
             send_forwarded_host=False,
         )
 
-    async def _prepare_sandbox(self, sandbox: AsyncSandbox) -> None:
-        """Make a freshly bound sandbox able to run the Agent before it is started.
-
-        The production template already contains the Agent, so there is nothing to do. The live
-        tests override this to install a locally built Agent into the default template.
-
-        :param sandbox: The sandbox about to have its Agent started.
-        """
-
     async def _create_sandbox(self) -> AsyncSandbox:
         """Ask E2B for a sandbox from the configured template.
 
@@ -389,7 +392,7 @@ class E2BProvider(AgentRuntimeProvider):
                 api_url=self.config.api_url,
                 domain=self.config.domain,
             )
-        except SandboxException as exc:
+        except SANDBOX_ERRORS as exc:
             raise AgentProvisionError(f"Could not create an E2B sandbox: {exc}") from exc
 
     def _build_agent_env(
@@ -540,7 +543,7 @@ class _SandboxClaim:
         claim = self.record
         try:
             info = await sandbox.get_info()
-        except SandboxException as exc:
+        except SANDBOX_ERRORS as exc:
             raise AgentProvisionError(f"Could not inspect the new E2B sandbox {sandbox.sandbox_id}: {exc}") from exc
 
         fields = {
@@ -583,9 +586,14 @@ class _SandboxClaim:
             f"{{ mkdir -p {shlex.quote(config.workspace_dir)} {shlex.quote(state_parent)}"
             f" && exec {config.agent_command}; }} >> {shlex.quote(config.agent_log_path)} 2>&1"
         )
+        # 显式指定用户：envd 版本够新时 SDK 不再默认带上 user，命令就由 envd 的默认用户（root）
+        # 执行，Agent 写出的文件和后面的停止信号都会跟镜像里的约定对不上。envd 不认识这个用户时，
+        # SDK 抛 AuthenticationException，已包含在 SANDBOX_ERRORS 里。
         try:
-            process = await sandbox.commands.run(command, background=True, envs=envs, timeout=0)
-        except SandboxException as exc:
+            process = await sandbox.commands.run(
+                command, background=True, envs=envs, timeout=0, user=config.agent_user
+            )
+        except SANDBOX_ERRORS as exc:
             raise AgentProvisionError(f"Could not start the Agent in E2B sandbox {sandbox.sandbox_id}: {exc}") from exc
 
         try:
@@ -644,9 +652,10 @@ class _SandboxClaim:
 
     async def _read_failure_output(self, sandbox: AsyncSandbox, process: AsyncCommandHandle) -> str:
         """Return the end of what a failed start wrote, for a failure that has to be explained."""
+        # 与启动它的用户一致：日志文件由那个用户创建。
         try:
-            content = str(await sandbox.files.read(self.config.agent_log_path))
-        except SandboxException:
+            content = str(await sandbox.files.read(self.config.agent_log_path, user=self.config.agent_user))
+        except SANDBOX_ERRORS:
             content = ""
         # The log file holds nothing when the shell could not even open it (an unwritable log
         # directory); what the shell said about that is in the command's own output instead.
@@ -666,7 +675,7 @@ class _SandboxClaim:
         if sandbox is not None:
             try:
                 await sandbox.kill()
-            except SandboxException:
+            except SANDBOX_ERRORS:
                 logger.warning(
                     "Could not kill E2B sandbox %s after provisioning failed; it runs until its E2B timeout",
                     sandbox.sandbox_id,
@@ -745,7 +754,7 @@ class _SandboxClaim:
             await sandbox.kill(request_timeout=KILL_REQUEST_TIMEOUT_SECONDS)
         except NotFoundException:
             pass
-        except SandboxException as exc:
+        except SANDBOX_ERRORS as exc:
             raise AgentProvisionError(f"Could not stop E2B sandbox {self.record.sandbox_id}: {exc}") from exc
 
     async def stop_agent(self, sandbox: AsyncSandbox, *, grace_seconds: float) -> None:
@@ -780,8 +789,10 @@ class _SandboxClaim:
         try:
             # 两层限时：envd 的 timeout 让 SDK 到点不再等，asyncio.timeout 兜住连接本身卡住。沙箱里
             # 那段循环不会被它们停下，但调用方紧接着就 kill 沙箱。
+            # 以启动 Agent 的同一个用户发信号：换成别的非 root 用户，kill 会因无权限失败，被当成
+            # 「进程已不在」直接返回，Agent 就来不及推送。
             async with asyncio.timeout(grace_seconds):
-                await sandbox.commands.run(command, timeout=grace_seconds)
+                await sandbox.commands.run(command, timeout=grace_seconds, user=self.config.agent_user)
         except TimeoutError, TimeoutException:
             logger.warning(
                 "The Agent in E2B sandbox %s did not exit within %.1f seconds of SIGTERM; killing the sandbox, "
@@ -805,10 +816,13 @@ class _SandboxClaim:
             return False
 
         # 走 envd 而不是端口代理：/health 不应答时，要区分的正是「进程没了」和「代理这条路不通」。
+        # 用启动 Agent 的同一个用户问：kill -0 对别的用户的进程也会失败，活着的 Agent 会被当成已退出。
         try:
             async with asyncio.timeout(HEALTH_PROBE_TIMEOUT_SECONDS):
                 result = await sandbox.commands.run(
-                    f"kill -0 {pid} 2>/dev/null && echo alive || echo gone", timeout=HEALTH_PROBE_TIMEOUT_SECONDS
+                    f"kill -0 {pid} 2>/dev/null && echo alive || echo gone",
+                    timeout=HEALTH_PROBE_TIMEOUT_SECONDS,
+                    user=self.config.agent_user,
                 )
         # 问不到就当它还在：宁可多探一次 /health，也不因为 envd 一时连不上就拆掉一个活着的 Agent。
         except Exception:
@@ -884,7 +898,7 @@ class _SandboxClaim:
                 return sandbox
         except NotFoundException:
             pass
-        except SandboxException as exc:
+        except SANDBOX_ERRORS as exc:
             raise AgentProvisionError(f"Could not inspect E2B sandbox {record.sandbox_id}: {exc}") from exc
         if reconcile:
             await self._release("expired")
@@ -910,7 +924,7 @@ class _SandboxClaim:
                 return self.rebuild_sandbox()
             except (SandboxException, ValueError) as exc:
                 raise AgentProvisionError(f"Could not rebuild E2B sandbox {sandbox_id}: {exc}") from exc
-        except SandboxException as exc:
+        except SANDBOX_ERRORS as exc:
             raise AgentProvisionError(f"Could not inspect E2B sandbox {sandbox_id}: {exc}") from exc
 
     def rebuild_sandbox(self) -> AsyncSandbox:
@@ -1004,7 +1018,7 @@ class _SandboxClaim:
         try:
             sandbox = await self._open_sandbox(record.sandbox_id)
             await sandbox.kill()
-        except AgentProvisionError, SandboxException:
+        except (AgentProvisionError, *SANDBOX_ERRORS):
             logger.warning(
                 "Could not kill E2B sandbox %s whose Agent never started; it runs until its E2B timeout",
                 record.sandbox_id,
