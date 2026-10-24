@@ -105,8 +105,7 @@ async def list_models(
 
 def _build_direct_catalog(config: DirectModelConfig) -> ModelCatalog:
     """Describe the one fixed model of a direct deployment."""
-    # model 形如 deepseek:deepseek-v4-flash。冒号后的部分才是用户认得的模型名，也是一轮对话提交的值。
-    code = config.model.partition(":")[2] or config.model
+    code = config.code
     option = ModelOption(code=code, name=config.name or code, context_window=config.context_window)
     return ModelCatalog(source=ModelSource.DIRECT, switchable=False, default_code=code, models=[option])
 
