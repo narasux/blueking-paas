@@ -26,8 +26,9 @@ from app_spark_api.agent.runtime import (
     DirectModelAccess,
     ModelAccessConfigurationError,
     ModelCredentialMissingError,
+    ModelNotAvailableError,
 )
-from app_spark_api.agent.runtime.model_access import resolve_model_access
+from app_spark_api.agent.runtime.model_access import resolve_model_access, resolve_run_model_name
 from app_spark_api.infras.bk_access_token import UserCredential, UserCredentialType
 
 APP_SECRET = "app-secret-value"
@@ -209,3 +210,51 @@ async def test_an_unknown_source_is_a_configuration_error(settings):
 
     with pytest.raises(ModelAccessConfigurationError):
         await resolve_model_access(CREDENTIAL)
+
+
+# --- The model one turn asks for ------------------------------------------------------------
+
+
+RECOMMENDED = ["deepseek-v4-pro", "hy3"]
+
+
+@pytest.mark.parametrize(
+    ("recommended", "model_code", "expected"),
+    [
+        pytest.param(RECOMMENDED, None, None, id="none-asked-for"),
+        pytest.param(RECOMMENDED, "hy3", "hy3", id="in-the-list"),
+        pytest.param([], "kimi-26", "kimi-26", id="empty-list-lets-the-gateway-decide"),
+    ],
+)
+def test_bkaidev_forwards_what_the_list_allows(bkaidev_settings, recommended, model_code, expected):
+    bkaidev_settings.BKAIDEV_MODEL_CONFIG = {**BKAIDEV_CONFIG, "recommended_models": recommended}
+    # 每轮都校验，不能换票、也不能调网关：两者的配置坏了也不影响结论。
+    bkaidev_settings.TOKEN_AUTH_ENDPOINT = ""
+    bkaidev_settings.BK_API_URL_TMPL = ""
+
+    assert resolve_run_model_name(model_code) == expected
+
+
+@pytest.mark.parametrize(
+    ("model", "model_code"),
+    [
+        pytest.param("deepseek:deepseek-v4-flash", None, id="none-asked-for"),
+        pytest.param("deepseek:deepseek-v4-flash", "deepseek-v4-flash", id="built-in"),
+        pytest.param("deepseek-v4-flash", "deepseek-v4-flash", id="built-in-without-provider"),
+    ],
+)
+def test_direct_never_forwards_its_built_in_model(settings, model, model_code):
+    settings.AGENT_MODEL_SOURCE = "direct"
+    settings.AGENT_DIRECT_MODEL_CONFIG = {"model": model}
+
+    assert resolve_run_model_name(model_code) is None
+
+
+@pytest.mark.parametrize(("source", "model_code"), [("bkaidev", "kimi-26"), ("direct", "hy3")])
+def test_a_model_not_offered_is_refused(bkaidev_settings, source, model_code):
+    bkaidev_settings.AGENT_MODEL_SOURCE = source
+    bkaidev_settings.BKAIDEV_MODEL_CONFIG = {**BKAIDEV_CONFIG, "recommended_models": RECOMMENDED}
+    bkaidev_settings.AGENT_DIRECT_MODEL_CONFIG = {"model": "deepseek:deepseek-v4-flash"}
+
+    with pytest.raises(ModelNotAvailableError, match=model_code):
+        resolve_run_model_name(model_code)

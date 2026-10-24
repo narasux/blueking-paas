@@ -227,12 +227,12 @@ class BkAidevModelConfig:
     app identity for the exchange is the service's own APP_CODE / APP_SECRET, never a nested copy.
 
     :param default_model_name: Model name injected as the Runtime's MODEL_NAME.
-    :param recommended_models: Model codes offered for picking, in the order they are shown.
-        Empty means every model the gateway offers this app.
+    :param recommended_models: Model codes offered for picking, in the order they are shown, and
+        the only ones a turn may ask for. Empty means every model the gateway offers this app,
+        and any well-formed code a turn asks for is passed on for the gateway to decide.
     """
 
-    # agent 只在启动时按 MODEL_NAME 建一次模型，缺了就起不来可用的模型，所以这里必须有值。
-    # 默认值要落在 agent 的 MODEL_PROFILES 里，表外的名字同样会让 Runtime 不可用。
+    # 没带模型的一轮、刚重建的沙箱都用它托底，缺了 Runtime 就起不来可用的模型，所以这里必须有值。
     default_model_name: str = attrs.field(default="deepseek-v4-flash", validator=validate_non_empty_string)
     recommended_models: list[str] = attrs.field(
         factory=list,
@@ -287,6 +287,12 @@ class DirectModelConfig:
     api_key: str | None = attrs.field(default=None, repr=False)
     name: str = ""
     context_window: int | None = None
+
+    @property
+    def code(self) -> str:
+        """The model code a user sees and a turn submits: the part of model after the colon."""
+        # 模型列表给前端的编码和每轮请求的校验都取这里，两处取法不一致时，列表给出的默认模型会被拒掉。
+        return self.model.partition(":")[2] or self.model
 
     def to_access(self) -> DirectModelAccess:
         """Return what a Runtime calling this model is given."""
