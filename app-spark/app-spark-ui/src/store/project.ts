@@ -16,6 +16,7 @@ import type {
   ConversationResponse,
   RuntimeStateResponse,
 } from '@/http/types';
+import { reportModelUnavailable, resolveModelCodeForSend } from '@/composables/use-model-catalog';
 import { ApiErrorCode, isApiError } from '@/http/error-codes';
 import type { AgUiApplyContext } from '@/services/agent/ag-ui';
 import {
@@ -718,6 +719,8 @@ export const useProjectStore = defineStore('project', () => {
     const runProjectId = projectId.value;
     const runNumber = conversationNumber.value;
     const runGeneration = liveRunGeneration;
+    // 点发送这一下就定下来。进行中改选模型只影响下一轮，不改已经发出去的请求。
+    const modelCode = resolveModelCodeForSend();
     const controller = new AbortController();
     liveRunAbort = controller;
     // 代数在取消时立刻加一，比项目号、会话号变得更早：openConversation 还在等接口时，
@@ -756,7 +759,7 @@ export const useProjectStore = defineStore('project', () => {
       const response = await startConversationRun(
         runProjectId,
         runNumber,
-        { content },
+        modelCode ? { content, model_code: modelCode } : { content },
         controller.signal,
       );
       if (!stillCurrent()) return;
@@ -774,8 +777,17 @@ export const useProjectStore = defineStore('project', () => {
     } catch (error) {
       // 切走时 abort 会落到这里。那条助手消息已经不在眼前的列表里，错误不能写到新对话上。
       if (!stillCurrent()) return;
+      // 选中的模型已经不在推荐列表里。提示后回到默认模型，下一轮不再拿着这个编码去撞 422。
+      const modelGone = isApiError(error, ApiErrorCode.MODEL_NOT_AVAILABLE);
+      if (modelGone) {
+        Message({ theme: 'warning', message: '该模型已不可用' });
+        await reportModelUnavailable();
+        if (!stillCurrent()) return;
+      }
       const textBlock = assistantMessage.blocks.find(block => block.type === 'text');
-      const detail = error instanceof Error ? error.message : '发起对话失败';
+      const detail = modelGone
+        ? '该模型已不可用'
+        : (error instanceof Error ? error.message : '发起对话失败');
       assistantMessage.tone = 'error';
       if (textBlock && !textBlock.text) {
         textBlock.text = detail;

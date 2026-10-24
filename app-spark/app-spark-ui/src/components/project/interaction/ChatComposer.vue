@@ -52,6 +52,7 @@
               <ImageFill />
             </button>
           </template>
+          <ModelPicker />
           <button
             type="button"
             class="chat-composer__send"
@@ -70,6 +71,7 @@
 import { computed, nextTick, onMounted, ref } from 'vue';
 import Message from '@/common/message';
 import { Close, ImageFill } from 'bkui-vue/lib/icon';
+import ModelPicker from './ModelPicker.vue';
 import { appendImages } from './read-image';
 import type { ChatImage } from './types';
 
@@ -271,6 +273,8 @@ const handleKeydown = (event: KeyboardEvent) => {
 }
 
 .chat-composer__hint {
+  flex: 1;
+  min-width: 0;
   margin: 0;
   overflow: hidden;
   color: var(--faint, #88919e);
@@ -282,9 +286,10 @@ const handleKeydown = (event: KeyboardEvent) => {
 
 .chat-composer__tools {
   display: flex;
-  flex-shrink: 0;
+  flex-shrink: 1;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 }
 
 .chat-composer__icon {
@@ -296,6 +301,7 @@ const handleKeydown = (event: KeyboardEvent) => {
 }
 
 .chat-composer__send {
+  flex-shrink: 0;
   height: 32px;
   padding: 0 14px;
   color: #fff;

@@ -133,8 +133,31 @@ export interface PreviewResponse {
   dev_server_status: DevServerStatus | null;
 }
 
+export type ModelSource = 'bkaidev' | 'direct';
+
+/** GET /models/ 里的一个可选模型。名称在 bkaidev 下等于编码。 */
+export interface ModelOptionResponse {
+  code: string;
+  name: string;
+  context_window: number | null;
+  supports_vision: boolean;
+}
+
+/** GET /models/：可选模型、不指定时用哪个、能不能切换。 */
+export interface ModelCatalogResponse {
+  source: ModelSource;
+  switchable: boolean;
+  default_code: string;
+  models: ModelOptionResponse[];
+}
+
 export interface StartRunRequest {
   content: string;
+  /**
+   * 本轮使用的模型编码，取自模型列表的 `models[].code`。
+   * 不传时后端用默认模型。direct 只读和列表失败时不要带这个字段。
+   */
+  model_code?: string;
 }
 
 export interface ListUiEventsQuery {

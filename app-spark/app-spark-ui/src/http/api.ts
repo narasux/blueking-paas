@@ -9,6 +9,7 @@ import type {
   ListConversationsQuery,
   ListHistoryQuery,
   ListUiEventsQuery,
+  ModelCatalogResponse,
   PagedConversationResponse,
   PagedProjectResponse,
   PageQuery,
@@ -35,6 +36,9 @@ export type {
   ListConversationsQuery,
   ListHistoryQuery,
   ListUiEventsQuery,
+  ModelCatalogResponse,
+  ModelOptionResponse,
+  ModelSource,
   PagedConversationResponse,
   PagedProjectResponse,
   PagedResponse,
@@ -51,6 +55,15 @@ export type {
 
 // 业务 API 前缀，不含 SITE_URL。绝对 BK_API_URL 只给本地 webpack 代理用
 const apiPrefix = '/api-svc/api';
+
+/**
+ * 当前部署可选的模型。
+ *
+ * 不按项目区分。失败由调用方降级成「默认模型」，这里关掉全局报错，避免一句 toast 挡住对话。
+ */
+export const listModels = (): Promise<ModelCatalogResponse> => (
+  http.get(`${apiPrefix}/models/`, {}, { globalError: false })
+);
 
 export const getUserInfo = (): Promise<AuthenticatedUserResponse> => (
   http.get(`${apiPrefix}/accounts/userinfo/`, {}, { globalError: false })
@@ -166,13 +179,21 @@ export const startConversationRun = async (
 
   if (!response.ok) {
     let detail = response.statusText || '发起对话失败';
+    // 业务码（如 MODEL_NOT_AVAILABLE）和 HTTP 状态不是一回事，调用方靠 code 区分。
+    let code: number | string = response.status;
+    let body: unknown;
     try {
-      const data = await response.json();
-      detail = data.detail || data.message || detail;
+      body = await response.json();
+      if (body && typeof body === 'object') {
+        const data = body as { code?: unknown; detail?: unknown; message?: unknown };
+        if (typeof data.detail === 'string' && data.detail) detail = data.detail;
+        else if (typeof data.message === 'string' && data.message) detail = data.message;
+        if (typeof data.code === 'string' && data.code) code = data.code;
+      }
     } catch {
       // 保持 statusText
     }
-    throw new RequestError(response.status, detail);
+    throw new RequestError(code, detail, body);
   }
 
   return response;
