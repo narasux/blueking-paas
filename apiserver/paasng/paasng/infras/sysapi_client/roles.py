@@ -78,6 +78,8 @@ class ClientPermChecker:
             ClientAction.MANAGE_AI_AGENT_PROCESS: False,
             # 创建 AppSpark 应用只给 APP_SPARK，AIDEV 也不能调。
             ClientAction.CREATE_APP_SPARK_APP: False,
+            # 校验应用 ID 和名称给会创建应用的角色：基础管理（含 AIDEV、LessCode）和 APP_SPARK。
+            ClientAction.VALIDATE_APP_BASIC_INFO: False,
         }
         basic_reader_perms = nobody_perms | {
             ClientAction.READ_APPLICATIONS: True,
@@ -86,6 +88,7 @@ class ClientPermChecker:
         basic_maintainer_perms = basic_reader_perms | {
             ClientAction.MANAGE_APPLICATIONS: True,
             ClientAction.MANAGE_ACCESS_CONTROL: True,
+            ClientAction.VALIDATE_APP_BASIC_INFO: True,
         }
         light_app_maintainer_perms = basic_reader_perms | {
             ClientAction.MANAGE_LIGHT_APPLICATIONS: True,
@@ -108,6 +111,7 @@ class ClientPermChecker:
             ClientAction.UPLOAD_SOURCE_PACKAGE: True,
             ClientAction.DEPLOY_APPLICATIONS: True,
             ClientAction.CREATE_APP_SPARK_APP: True,
+            ClientAction.VALIDATE_APP_BASIC_INFO: True,
         }
 
         return {

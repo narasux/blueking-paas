@@ -37,7 +37,7 @@ Runtime 调模型走哪条路由 `AGENT_MODEL_SOURCE` 决定，不配时是 `bka
 
 ### 配置
 
-- 必填：`BK_API_URL_TMPL`、`TOKEN_AUTH_ENDPOINT`、`APP_CODE` / `APP_SECRET`
+- 必填：`BK_API_URL_TMPL`、`TOKEN_AUTH_ENDPOINT`、`APP_SECRET`（`APP_CODE` 默认 `bk-app-spark`）
 - 可选：`AGENT_MODEL_SOURCE`（默认就是 `bkaidev`）、`BKAIDEV_APIGW_ENVIRONMENT`、`AUTH_ENV_NAME`、`BKAUTH_BACKEND_TYPE`
   （见下面「换取 access_token」）、`BKAIDEV_MODEL_CONFIG`（见下面「模型列表」）
 

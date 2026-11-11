@@ -63,3 +63,6 @@ class ClientAction(StrStructuredEnum):
 
     # 仅供 AppSpark 使用
     CREATE_APP_SPARK_APP = EnumField("sysapi:create:app-spark-app", label=_("创建 AppSpark 应用"))
+
+    # 给会创建应用的系统在创建前检查应用 ID 和名称能否使用
+    VALIDATE_APP_BASIC_INFO = EnumField("sysapi:validate:app-basic-info", label=_("校验应用 ID 和名称"))
